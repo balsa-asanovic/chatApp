@@ -1,3 +1,5 @@
+import onlineIcon from "../online.png";
+
 const Users = ({ users, myUsername, getChatFriend }) => {
     return (
         <div className="flex flex-col border-r-2 w-1/4 bg-white rounded-2xl">
@@ -11,7 +13,7 @@ const Users = ({ users, myUsername, getChatFriend }) => {
                         <div className="w-full pb-2">
                             <div className="flex justify-between">
                                 <span className="block ml-2 font-semibold text-gray-600">{user.username}</span>
-                                <span className="block ml-2 text-sm"></span>
+                                <span className="block ml-2 mt-2"><img src={onlineIcon} className="h-3 w-3" /></span>
                             </div>
                             <span className="flex ml-2 text-sm text-gray-600"></span>
                         </div>
