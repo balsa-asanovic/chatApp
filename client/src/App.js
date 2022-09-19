@@ -29,6 +29,8 @@ function App() {
   // id and username of the person you chat with
   const [friendId, setFriendId] = useState("");
   const [friendUsername, setFriendUsername] = useState("");
+  // reference to friendId state, so we wouldn't get stale value in listener in useEffect
+  const friendIdRef = useRef(friendId);
   // reference to input field, used for focus
   const inputRef = useRef(null);
 
@@ -45,6 +47,11 @@ function App() {
   };
 
   useEffect(() => {
+    // keeping ref updated
+    friendIdRef.current = friendId;
+  });
+
+  useEffect(() => {
     // setting id assigned by socket
     socket.on("id", (data) => {
       setId(data);
@@ -59,6 +66,14 @@ function App() {
     });
     // focusing on input form when page is rendered
     inputRef.current.focus();
+    // listener for users list object
+    socket.on("users_list", (data) => {
+      setUsers(data);
+      // checking to see if our friend is in the user's list, if not close the chat
+      // if still there, update username
+      !data.filter((item) => item.id === friendIdRef.current).length ? setFriendId("")
+        : setFriendUsername(data.find((item) => item.id === friendIdRef.current).username);
+    });
   }, []);
 
   useLayoutEffect(() => {
@@ -91,7 +106,7 @@ function App() {
             </p>
           </form>
         </div>)
-        : (<div className="flex flex-row p-5 rounded-2xl space-x-2 h-screen">
+        : (<div className="flex flex-row p-16 rounded-2xl space-x-2 h-screen">
           <Users users={users} myUsername={username} getChatFriend={getChatFriend} />
           <Chat socket={socket} id={id} username={username} setUsername={setUsername} friendId={friendId} setFriendId={setFriendId} friendUsername={friendUsername} setFriendUsername={setFriendUsername} />
         </div>)
