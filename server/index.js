@@ -24,7 +24,6 @@ io.on("connection", (e) => {
     // returns false if the same username is already connected
     // otherwise returns true for and returns users ID
     e.on("join_chat", (data) => {
-        console.log(data);
         if (users.find((user) => user.username === data)) {
             e.emit("join_status", false);
         } else {
@@ -33,6 +32,11 @@ io.on("connection", (e) => {
             e.emit("join_status", true);
             e.emit("id", e.id);
         }
+    });
+
+    // listener for message send, which then emits message to destination id
+    e.on("send_message", (data) => {
+        io.to(data.id).emit("receive_message", data);
     });
 
     // listener for disconnect event, removes user from the list when it happens and emits the new list
