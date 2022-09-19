@@ -2,6 +2,7 @@ import './App.css';
 import io from "socket.io-client";
 import { useEffect, useState } from "react";
 import Users from './components/Users';
+import Chat from './components/Chat';
 
 const socket = io.connect("http://localhost:5000");
 
@@ -53,6 +54,7 @@ function App() {
         </div>)
         : (<div>
           <Users users={users} myUsername={username} />
+          <Chat id={id} username={username} setUsername={setUsername} />
         </div>)
       }
     </>
