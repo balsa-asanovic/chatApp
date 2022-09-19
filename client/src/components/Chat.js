@@ -10,7 +10,14 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
         e.preventDefault();
 
         if (message !== "") {
-            const time = new Date(Date.now());
+            const nickNameChangeReg = /^\/nick <[a-zA-Z0-9]+>$/;
+            if (nickNameChangeReg.test(message)) {
+                const newUsername = /<([a-zA-z]+)>/.exec(message)[1];
+                socket.emit("username_change", { id: id, username: newUsername });
+                setUsername(newUsername);
+            } else {
+
+                const time = new Date(Date.now());
                 const messageData = {
                     username: username,
                     id: friendId,
@@ -19,7 +26,9 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
                     time: time.getHours().toString().padStart(2, "0") + ":" + time.getMinutes().toString().padStart(2, "0")
                 };
                 await socket.emit("send_message", messageData);
+                // updating message list with latest message
                 setMessageHistory((prev) => [...prev, messageData]);
+            }
         }
 
         setMessage("");
@@ -33,6 +42,11 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
             setFriendUsername(data.username);
         });
     }, []);
+
+    // message history cleanup after disconnect with chat friend
+    useEffect(() => {
+        !friendId && setMessageHistory([]);
+    }, [friendId])
 
     return (
         friendId && (
