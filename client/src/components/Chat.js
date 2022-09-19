@@ -1,13 +1,14 @@
 import { useState } from "react";
 
-const Chat = ({ id, username, setUsername }) => {
+const Chat = ({ id, username, setUsername, friendId, friendUsername }) => {
     const [message, setMessage] = useState("");
     const [messageHistory, setMessageHistory] = useState([]);
 
     return (
-        <div>
+        friendId && (
+            <div>
                 <div>
-                    <p>Live Chat</p>
+                    <p>{friendUsername}</p>
                 </div>
                 <div>
                     {messageHistory.map((messageData, index) => {
@@ -26,7 +27,9 @@ const Chat = ({ id, username, setUsername }) => {
                         <button>Send</button>
                     </form>
                 </div>
-            </div>)
+            </div>
+        )
+    )
 };
 
 export default Chat;

@@ -14,10 +14,20 @@ function App() {
   const [joined, setJoined] = useState(false);
   // list of connected users
   const [users, setUsers] = useState([]);
+  // id and username of the person you chat with
+  const [friendId, setFriendId] = useState("");
+  const [friendUsername, setFriendUsername] = useState("");
 
   const joinChat = (e) => {
     e.preventDefault();
     username !== "" && socket.emit("join_chat", username);
+  };
+
+  const getChatFriend = (chatFriendId, chatFriendUsername) => {
+    if (id !== chatFriendId) {
+      setFriendId(chatFriendId);
+      setFriendUsername(chatFriendUsername);
+    }
   };
 
   useEffect(() => {
@@ -53,8 +63,8 @@ function App() {
           </form>
         </div>)
         : (<div>
-          <Users users={users} myUsername={username} />
-          <Chat id={id} username={username} setUsername={setUsername} />
+          <Users users={users} myUsername={username} getChatFriend={getChatFriend} />
+          <Chat id={id} username={username} setUsername={setUsername} friendId={friendId} friendUsername={friendUsername} />
         </div>)
       }
     </>
