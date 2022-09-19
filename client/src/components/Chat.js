@@ -11,18 +11,21 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
 
         if (message !== "") {
             const nickNameChangeReg = /^\/nick <[a-zA-Z0-9]+>$/;
+            const thinkMessageReg = /^\/think <(.+)>$/;
             if (nickNameChangeReg.test(message)) {
                 const newUsername = /<([a-zA-z]+)>/.exec(message)[1];
                 socket.emit("username_change", { id: id, username: newUsername });
                 setUsername(newUsername);
             } else {
+                const thinkMessage = thinkMessageReg.test(message);
 
                 const time = new Date(Date.now());
                 const messageData = {
                     username: username,
                     id: friendId,
                     from: id,
-                    message: message,
+                    message: !thinkMessage ? message : /<(.+)>/.exec(message)[1],
+                    think: thinkMessage,
                     time: time.getHours().toString().padStart(2, "0") + ":" + time.getMinutes().toString().padStart(2, "0")
                 };
                 await socket.emit("send_message", messageData);

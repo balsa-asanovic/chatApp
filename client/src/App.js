@@ -56,7 +56,7 @@ function App() {
     socket.on("id", (data) => {
       setId(data);
     });
-    // if joined successfully show users list and chat and hide initial form, otherwise show user exist error
+    // if joined successfully show users list and chat and hide initial form, otherwise show user exists error
     socket.on("join_status", (data) => {
       data ? setJoined(true) : setUsernameExists(true);
     })
