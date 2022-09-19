@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GrSend } from "react-icons/gr";
 import Message from "./Message";
 
-const Chat = ({ socket, id, username, setUsername, friendId, friendUsername }) => {
+const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friendUsername, setFriendUsername }) => {
     const [message, setMessage] = useState("");
     const [messageHistory, setMessageHistory] = useState([]);
 
@@ -21,7 +21,18 @@ const Chat = ({ socket, id, username, setUsername, friendId, friendUsername }) =
                 await socket.emit("send_message", messageData);
                 setMessageHistory((prev) => [...prev, messageData]);
         }
+
+        setMessage("");
     };
+
+    useEffect(() => {
+        socket.removeAllListeners("receive_message");
+        socket.on("receive_message", (data) => {
+            setMessageHistory((prev) => [...prev, data]);
+            setFriendId(data.from);
+            setFriendUsername(data.username);
+        });
+    }, []);
 
     return (
         friendId && (

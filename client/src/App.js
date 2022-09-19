@@ -93,7 +93,7 @@ function App() {
         </div>)
         : (<div className="flex flex-row p-5 rounded-2xl space-x-2 h-screen">
           <Users users={users} myUsername={username} getChatFriend={getChatFriend} />
-          <Chat socket={socket} id={id} username={username} setUsername={setUsername} friendId={friendId} friendUsername={friendUsername} />
+          <Chat socket={socket} id={id} username={username} setUsername={setUsername} friendId={friendId} setFriendId={setFriendId} friendUsername={friendUsername} setFriendUsername={setFriendUsername} />
         </div>)
       }
     </>
