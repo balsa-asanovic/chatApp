@@ -39,11 +39,21 @@ io.on("connection", (e) => {
         io.to(data.id).emit("receive_message", data);
     });
 
+    e.on("username_change", (data) => {
+        users = [...users.filter((user) => user.id !== data.id), data];
+        io.sockets.emit("users_list", users);
+    });
+
     // listener for disconnect event, removes user from the list when it happens and emits the new list
     e.on("disconnect", () => {
         users = users.filter((item) => item.id !== e.id);
         io.sockets.emit("users_list", users);
     });
 });
+
+// send users list every 15 seconds so the user's list remains updated
+setInterval(() => {
+    io.sockets.emit("users_list", users);
+}, 15000);
 
 server.listen(5000);
