@@ -85,17 +85,17 @@ function App() {
   return (
     <>
       {!joined ? (
-        <div className="flex flex-col items-center w-1/2 my-[15%] m-auto space-y-20">
-          <h1 className="text-5xl text-slate-300 font-bold">Chat App</h1>
+        <div className="flex flex-col items-center w-1/2 my-[15%] m-auto space-y-10 md:space-y-20">
+          <h1 className="text-3xl md:text-5xl text-slate-300 font-bold">Chat App</h1>
           <form onSubmit={joinChat} className="w-full max-w-sm">
-            <div className="flex items-center border-teal-500 py-2">
+            <div className="flex flex-col md:flex-row items-center border-teal-500 py-2">
               <input className="appearance-none bg-transparent border-solid border-b-2 w-full text-gray-300 mr-3 py-1 px-2 leading-tight outline-none focus:bg-gradient-to-br from-sky-700 to-indigo-500 rounded"
                 type="text"
                 placeholder="Username"
                 ref={inputRef}
                 required
                 onChange={(e) => {setUsername(e.target.value); setUsernameExists(false)}} />
-              <button className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
+              <button className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded mt-2 md:mt-0"
                       disabled={!username || !validUsername || usernameExists}>
                 Join Chat
               </button>
@@ -108,7 +108,7 @@ function App() {
             </p>
           </form>
         </div>)
-        : (<div className="flex flex-row p-16 rounded-2xl space-x-2 h-screen">
+        : (<div className="flex flex-col md:flex-row p-16 rounded-2xl md:space-x-2 h-screen">
           <Users users={users} myUsername={username} getChatFriend={getChatFriend} />
           <Chat socket={socket} id={id} username={username} setUsername={setUsername} friendId={friendId} setFriendId={setFriendId} friendUsername={friendUsername} setFriendUsername={setFriendUsername} choseNewFriend={choseNewFriend} setChoseNewFriend={setChoseNewFriend} />
         </div>)

@@ -2,7 +2,7 @@ import onlineIcon from "../online.png";
 
 const Users = ({ users, myUsername, getChatFriend }) => {
     return (
-        <div className="flex flex-col border-r-2 w-1/4 bg-white rounded-2xl">
+        <div className="flex flex-col w-full mx-auto mb-2 md:m-0 border-r-2 md:w-1/4 bg-white rounded-2xl">
             <h2 className="py-2 pb-2 pl-2 text-lg border-b border-gray-500 text-gray-600"><span className="font-bold">{myUsername}'s</span> Chats</h2>
             <ul>
                 {users && users.filter((user) => user.username !== myUsername).map((user) => {
