@@ -119,7 +119,7 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
     return (
         friendId && (
             <div className="flex flex-col w-full rounded-2xl space-y-1 overflow-auto">
-                <div className="border-b-2 py-6 pl-4 bg-white rounded-2xl">
+                <div className="flex flex-row border-b-2 py-6 pl-4 bg-white rounded-2xl">
                     <p className="text-3xl font-bold">{friendUsername}</p>
                     {typing && <Typing />}
                 </div>
