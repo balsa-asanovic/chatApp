@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { GrSend } from "react-icons/gr";
 import Message from "./Message";
 
-const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friendUsername, setFriendUsername }) => {
+const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friendUsername, setFriendUsername, choseNewFriend, setChoseNewFriend }) => {
     const [message, setMessage] = useState("");
     const [messageHistory, setMessageHistory] = useState([]);
 
@@ -40,15 +40,16 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
     useEffect(() => {
         socket.removeAllListeners("receive_message");
         socket.on("receive_message", (data) => {
-            setMessageHistory((prev) => [...prev, data]);
             setFriendId(data.from);
             setFriendUsername(data.username);
+            setMessageHistory((prev) => [...prev, data]);
         });
     }, []);
 
-    // message history cleanup after disconnect with chat friend
+    // message history cleanup after disconnect with chat friend or friend change
     useEffect(() => {
-        !friendId && setMessageHistory([]);
+        messageHistory.length && (choseNewFriend ? setMessageHistory([]) : setMessageHistory((prev) => [prev?.at(-1)]));
+        choseNewFriend && setChoseNewFriend(false);
     }, [friendId])
 
     return (
