@@ -4,6 +4,8 @@ const app = express();
 const http = require("http");
 const cors = require("cors");
 
+require("dotenv").config();
+
 const { Server } = require("socket.io");
 
 app.use(cors());
@@ -61,4 +63,4 @@ setInterval(() => {
     io.sockets.emit("users_list", users);
 }, 15000);
 
-server.listen(5000);
+server.listen(process.env.PORT || 5000);
