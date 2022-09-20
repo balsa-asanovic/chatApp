@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GrSend } from "react-icons/gr";
 import Message from "./Message";
 
 const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friendUsername, setFriendUsername, choseNewFriend, setChoseNewFriend }) => {
     const [message, setMessage] = useState("");
     const [messageHistory, setMessageHistory] = useState([]);
+    // reference to a div at the bottom of a chat for auto scrolling
+    const chatBottom = useRef(null);
 
     const sendMessage = async (e) => {
         e.preventDefault();
@@ -40,6 +42,10 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
     };
 
     useEffect(() => {
+        chatBottom.current?.scrollIntoView({behavior: "smooth"});
+    }, [messageHistory]);
+
+    useEffect(() => {
         socket.removeAllListeners("receive_message");
         socket.on("receive_message", (data) => {
             setFriendId(data.from);
@@ -66,6 +72,7 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
                             <Message key={index} message={messageData} me={messageData.from === id} />
                         )
                     })}
+                    <div ref={chatBottom}></div>
                 </div>
                 <div className="p-3 border-t-2 rounded-b-2xl bg-white rounded-2xl">
                     <form onSubmit={sendMessage} className="flex flex-row space-x-2 pt-2">
