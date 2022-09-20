@@ -12,12 +12,14 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
         if (message !== "") {
             const nickNameChangeReg = /^\/nick <[a-zA-Z0-9]+>$/;
             const thinkMessageReg = /^\/think <(.+)>$/;
+            const oopsMessageReg = /^\/oops$/;
             if (nickNameChangeReg.test(message)) {
                 const newUsername = /<([a-zA-z]+)>/.exec(message)[1];
                 socket.emit("username_change", { id: id, username: newUsername });
                 setUsername(newUsername);
             } else {
                 const thinkMessage = thinkMessageReg.test(message);
+                const oopsMessage = oopsMessageReg.test(message);
 
                 const time = new Date(Date.now());
                 const messageData = {
@@ -30,7 +32,7 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
                 };
                 await socket.emit("send_message", messageData);
                 // updating message list with latest message
-                setMessageHistory((prev) => [...prev, messageData]);
+                !oopsMessage ? setMessageHistory((prev) => [...prev, messageData]) : setMessageHistory((prev) => prev.slice(0, -1));
             }
         }
 
@@ -42,7 +44,7 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
         socket.on("receive_message", (data) => {
             setFriendId(data.from);
             setFriendUsername(data.username);
-            setMessageHistory((prev) => [...prev, data]);
+            data.message !== "/oops" ? setMessageHistory((prev) => [...prev, data]) : setMessageHistory((prev) => prev.slice(0, -1));
         });
     }, []);
 
