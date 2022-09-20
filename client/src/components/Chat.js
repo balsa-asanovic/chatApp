@@ -19,14 +19,14 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
         e.preventDefault();
 
         if (message !== "") {
-            const nickNameChangeReg = /^\/nick <[a-zA-Z0-9]+>$/;
-            const thinkMessageReg = /^\/think <(.+)>$/;
+            const nickNameChangeReg = /^\/nick ([a-zA-Z0-9]+)$/;
+            const thinkMessageReg = /^\/think (.+)$/;
             const oopsMessageReg = /^\/oops$/;
             const fadeMessageReg = /^\/fadelast$/;
-            const highlightMessageReg = /^\/highlight <(.+)>$/;
-            const redirectMessageReg = /^\/countdown <[0-9]{1,2}> <(.+)>$/;
+            const highlightMessageReg = /^\/highlight (.+)$/;
+            const redirectMessageReg = /^\/countdown ([0-9]{1,2}) (.+)$/;
             if (nickNameChangeReg.test(message)) {
-                const newUsername = /<([a-zA-z]+)>/.exec(message)[1];
+                const newUsername = nickNameChangeReg.exec(message)[1];
                 socket.emit("username_change", { id: id, username: newUsername });
                 setUsername(newUsername);
             } else {
@@ -38,11 +38,11 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
                 const highlightMessage = highlightMessageReg.test(message);
                 const redirectMessage = redirectMessageReg.test(message);
 
-                thinkMessage && (messageToSend = /<(.+)>/.exec(message)[1]);
-                highlightMessage && (messageToSend = /<(.+)>/.exec(messageToSend)[1]);
+                thinkMessage && (messageToSend = thinkMessageReg.exec(messageToSend)[1]);
+                highlightMessage && (messageToSend = highlightMessageReg.exec(messageToSend)[1]);
 
-                const url = redirectMessage ? message?.match(/<([^<>]+)>/g)[1].match(/<([^<>]+)>/)[1] : "";
-                const urlTimer = redirectMessage ? message?.match(/<([^<>]+)>/g)[0].match(/<([^<>]+)>/)[1] : "";
+                const url = redirectMessage ? redirectMessageReg.exec(messageToSend)[2] : "";
+                const urlTimer = redirectMessage ? redirectMessageReg.exec(messageToSend)[1] : "";
 
                 const time = new Date(Date.now());
                 const messageData = {
