@@ -15,6 +15,7 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
             const nickNameChangeReg = /^\/nick <[a-zA-Z0-9]+>$/;
             const thinkMessageReg = /^\/think <(.+)>$/;
             const oopsMessageReg = /^\/oops$/;
+            const fadeMessageReg = /^\/fadelast$/;
             if (nickNameChangeReg.test(message)) {
                 const newUsername = /<([a-zA-z]+)>/.exec(message)[1];
                 socket.emit("username_change", { id: id, username: newUsername });
@@ -22,6 +23,7 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
             } else {
                 const thinkMessage = thinkMessageReg.test(message);
                 const oopsMessage = oopsMessageReg.test(message);
+                const fadeMessage = fadeMessageReg.test(message);
 
                 const time = new Date(Date.now());
                 const messageData = {
@@ -30,11 +32,12 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
                     from: id,
                     message: !thinkMessage ? message : /<(.+)>/.exec(message)[1],
                     think: thinkMessage,
+                    fade: false,
                     time: time.getHours().toString().padStart(2, "0") + ":" + time.getMinutes().toString().padStart(2, "0")
                 };
                 await socket.emit("send_message", messageData);
                 // updating message list with latest message
-                !oopsMessage ? setMessageHistory((prev) => [...prev, messageData]) : setMessageHistory((prev) => prev.slice(0, -1));
+                !oopsMessage ? !fadeMessage ? setMessageHistory((prev) => [...prev, messageData]) : setMessageHistory((prev) => [...prev.slice(0, -1), {...prev.at(-1), fade:true}]) : setMessageHistory((prev) => prev.slice(0, -1));
             }
         }
 
@@ -50,7 +53,7 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
         socket.on("receive_message", (data) => {
             setFriendId(data.from);
             setFriendUsername(data.username);
-            data.message !== "/oops" ? setMessageHistory((prev) => [...prev, data]) : setMessageHistory((prev) => prev.slice(0, -1));
+            data.message !== "/oops" ? data.message !== "/fadelast" ? setMessageHistory((prev) => [...prev, data]) : setMessageHistory((prev) => [...prev.slice(0, -1), {...prev.at(-1), fade:true}]) : setMessageHistory((prev) => prev.slice(0, -1));
         });
     }, []);
 
