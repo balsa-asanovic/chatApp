@@ -27,7 +27,7 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
                 socket.emit("username_change", { id: id, username: newUsername });
                 setUsername(newUsername);
             } else {
-                let messageToSend = message;
+                let messageToSend = message.replace(/\(smile\)/gi, String.fromCodePoint(128513)).replace(/\(wink\)/gi, String.fromCodePoint(128521));
 
                 const thinkMessage = thinkMessageReg.test(message);
                 const oopsMessage = oopsMessageReg.test(message);
