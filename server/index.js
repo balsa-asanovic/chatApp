@@ -39,9 +39,14 @@ io.on("connection", (e) => {
         io.to(data.id).emit("receive_message", data);
     });
 
+    // listener for the username change action
     e.on("username_change", (data) => {
         users = [...users.filter((user) => user.id !== data.id), data];
         io.sockets.emit("users_list", users);
+    });
+
+    e.on("user_typing", (userId) => {
+        io.to(userId).emit("user_typing");
     });
 
     // listener for disconnect event, removes user from the list when it happens and emits the new list

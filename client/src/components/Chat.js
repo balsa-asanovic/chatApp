@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { GrSend } from "react-icons/gr";
 import Message from "./Message";
+import Typing from "./Typing";
 
 const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friendUsername, setFriendUsername, choseNewFriend, setChoseNewFriend }) => {
     const [message, setMessage] = useState("");
@@ -11,6 +12,8 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
     const [redirect, setRedirect] = useState(false);
     const [redirectTimer, setRedirectTimer] = useState(0);
     const redirectTimerRef = useRef(redirectTimer);
+    // state for typing indicator
+    const [typing, setTyping] = useState(false);
 
     const sendMessage = async (e) => {
         e.preventDefault();
@@ -84,7 +87,19 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
 
     useEffect(() => {
         chatBottom.current?.scrollIntoView({ behavior: "smooth" });
+        setTyping(false);
     }, [messageHistory]);
+
+    useEffect(() => {
+        message && socket.emit("user_typing", friendId);
+    }, [message]);
+
+    useEffect(() => {
+        socket.on("user_typing", () => {
+            setTyping(true);
+        });
+        setInterval(() => setTyping(false), 2000);
+    }, []);
 
     useEffect(() => {
         socket.removeAllListeners("receive_message");
@@ -97,7 +112,6 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
 
     // message history cleanup after disconnect with chat friend or friend change
     useEffect(() => {
-        console.log(`friend id change ${friendId}`);
         messageHistory.length && (choseNewFriend ? setMessageHistory([]) : setMessageHistory((prev) => [prev?.at(-1)]));
         choseNewFriend && setChoseNewFriend(false);
     }, [friendId])
@@ -107,8 +121,9 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
             <div className="flex flex-col w-full rounded-2xl space-y-1 overflow-auto">
                 <div className="border-b-2 py-6 pl-4 bg-white rounded-2xl">
                     <p className="text-3xl font-bold">{friendUsername}</p>
+                    {typing && <Typing />}
                 </div>
-                <div className="overflow-auto h-[80%] space-y-2 bg-white rounded-2xl">
+                <div className="overflow-auto h-[80%] space-y-2 bg-white rounded-2xl relative">
                     {redirect ? <div className="text-7xl text-center relative top-[50%]">{redirectTimer}</div> :
                         messageHistory.map((messageData, index) => {
                             return (
@@ -126,7 +141,7 @@ const Chat = ({ socket, id, username, setUsername, friendId, setFriendId, friend
                             value={message}
                             className="bg-gray-200 h-10 w-[97%] rounded-2xl pl-2 focus:outline-none"
                         />
-                        <button className="w-[7%] md:w-[3%]"><GrSend size="2xs" /></button>
+                        <button className="w-[7%] md:w-[3%]"><GrSend size={25} /></button>
                     </form>
                 </div>
             </div>
